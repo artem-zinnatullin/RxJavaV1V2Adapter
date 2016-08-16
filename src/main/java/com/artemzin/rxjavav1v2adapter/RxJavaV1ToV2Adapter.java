@@ -5,11 +5,14 @@ import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableSource;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.functions.Consumer;
-import io.reactivex.internal.operators.observable.ObservableFromSource;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Cancellable;
 import rx.AsyncEmitter;
 import rx.Observable;
+import rx.Subscription;
 import rx.functions.Action1;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class RxJavaV1ToV2Adapter {
 
@@ -21,19 +24,29 @@ public final class RxJavaV1ToV2Adapter {
         return Observable.fromAsync(new Action1<AsyncEmitter<T>>() {
             @Override
             public void call(final AsyncEmitter<T> asyncEmitter) {
-                o2.subscribe(new Consumer<T>() {
+                o2.subscribe(new Observer<T>() {
                     @Override
-                    public void accept(T value) throws Exception {
+                    public void onSubscribe(final Disposable disposable) {
+                        asyncEmitter.setCancellation(new AsyncEmitter.Cancellable() {
+                            @Override
+                            public void cancel() throws Exception {
+                                disposable.dispose();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNext(T value) {
                         asyncEmitter.onNext(value);
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(Throwable error) throws Exception {
+                    public void onError(Throwable error) {
                         asyncEmitter.onError(error);
                     }
-                }, new Runnable() {
+
                     @Override
-                    public void run() {
+                    public void onComplete() {
                         asyncEmitter.onCompleted();
                     }
                 });
@@ -45,19 +58,31 @@ public final class RxJavaV1ToV2Adapter {
         return Observable.fromAsync(new Action1<AsyncEmitter<T>>() {
             @Override
             public void call(final AsyncEmitter<T> asyncEmitter) {
-                f2.subscribe(new Consumer<T>() {
+                f2.subscribe(new org.reactivestreams.Subscriber<T>() {
                     @Override
-                    public void accept(T value) throws Exception {
+                    public void onSubscribe(final org.reactivestreams.Subscription subscription) {
+                        subscription.request(Long.MAX_VALUE);
+                        
+                        asyncEmitter.setCancellation(new AsyncEmitter.Cancellable() {
+                            @Override
+                            public void cancel() throws Exception {
+                                subscription.cancel();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNext(T value) {
                         asyncEmitter.onNext(value);
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(Throwable error) throws Exception {
+                    public void onError(Throwable error) {
                         asyncEmitter.onError(error);
                     }
-                }, new Runnable() {
+
                     @Override
-                    public void run() {
+                    public void onComplete() {
                         asyncEmitter.onCompleted();
                     }
                 });
@@ -65,11 +90,34 @@ public final class RxJavaV1ToV2Adapter {
         }, AsyncEmitter.BackpressureMode.NONE);
     }
 
-    public static <T> io.reactivex.Observable o1ToO2(final Observable<T> o1) {
+    public static <T> io.reactivex.Observable<T> o1ToO2(final Observable<T> o1) {
         return io.reactivex.Observable.create(new ObservableSource<T>() {
             @Override
             public void subscribe(final Observer<? super T> observer) {
-                o1.subscribe(new rx.Observer<T>() {
+                final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
+                observer.onSubscribe(new Disposable() {
+                    @Override
+                    public void dispose() {
+                        final Subscription s = subscription.get();
+
+                        if (s != null) {
+                            s.unsubscribe();
+                        }
+                    }
+
+                    @Override
+                    public boolean isDisposed() {
+                        final Subscription s = subscription.get();
+
+                        if (s == null) {
+                            return false;
+                        } else {
+                            return s.isUnsubscribed();
+                        }
+                    }
+                });
+
+                final Subscription s = o1.subscribe(new rx.Observer<T>() {
                     @Override
                     public void onNext(T value) {
                         observer.onNext(value);
@@ -85,6 +133,8 @@ public final class RxJavaV1ToV2Adapter {
                         observer.onComplete();
                     }
                 });
+                
+                subscription.set(s);
             }
         });
     }
@@ -93,7 +143,7 @@ public final class RxJavaV1ToV2Adapter {
         return Flowable.create(new FlowableSource<T>() {
             @Override
             public void subscribe(final FlowableEmitter<T> flowableEmitter) {
-                o1.subscribe(new rx.Observer<T>() {
+                final Subscription subscription = o1.subscribe(new rx.Observer<T>() {
                     @Override
                     public void onNext(T value) {
                         flowableEmitter.onNext(value);
@@ -107,6 +157,13 @@ public final class RxJavaV1ToV2Adapter {
                     @Override
                     public void onCompleted() {
                         flowableEmitter.onComplete();
+                    }
+                });
+
+                flowableEmitter.setCancellation(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        subscription.unsubscribe();
                     }
                 });
             }
