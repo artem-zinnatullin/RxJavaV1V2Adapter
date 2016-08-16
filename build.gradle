@@ -1,0 +1,16 @@
+group 'com.artemzin.rxjavav1v2adapter'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.jfrog.org/libs-snapshot/' }
+}
+
+dependencies {
+    compile 'io.reactivex:rxjava:1.1.9'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.0-DP0-SNAPSHOT'
+}
