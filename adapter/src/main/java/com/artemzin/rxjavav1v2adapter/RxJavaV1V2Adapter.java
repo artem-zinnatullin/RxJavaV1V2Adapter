@@ -14,9 +14,9 @@ import rx.functions.Action1;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class RxJavaV1ToV2Adapter {
+public final class RxJavaV1V2Adapter {
 
-    private RxJavaV1ToV2Adapter() {
+    private RxJavaV1V2Adapter() {
         throw new IllegalStateException("No instances please!");
     }
 

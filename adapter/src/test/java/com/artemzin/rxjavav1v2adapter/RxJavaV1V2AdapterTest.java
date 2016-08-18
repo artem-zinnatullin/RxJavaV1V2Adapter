@@ -15,12 +15,12 @@ import rx.subjects.PublishSubject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Enclosed.class)
-public class RxJavaV1ToV2AdapterTest {
+public class RxJavaV1V2AdapterTest {
 
     public static class O2ToO1 {
 
         io.reactivex.subjects.PublishSubject<String> o2 = io.reactivex.subjects.PublishSubject.create();
-        Observable<String> o1 = RxJavaV1ToV2Adapter.o2ToO1((io.reactivex.Observable<String>) o2);
+        Observable<String> o1 = RxJavaV1V2Adapter.o2ToO1((io.reactivex.Observable<String>) o2);
         TestSubscriber<String> ts1 = new TestSubscriber<String>();
         Subscription s1;
 
@@ -107,7 +107,7 @@ public class RxJavaV1ToV2AdapterTest {
     public static class F2ToO1 {
 
         PublishProcessor<String> f2 = PublishProcessor.create();
-        Observable<String> o1 = RxJavaV1ToV2Adapter.f2ToO1((Flowable<String>) f2);
+        Observable<String> o1 = RxJavaV1V2Adapter.f2ToO1((Flowable<String>) f2);
         TestSubscriber<String> ts1 = new TestSubscriber<String>();
         Subscription s1;
 
@@ -194,7 +194,7 @@ public class RxJavaV1ToV2AdapterTest {
     public static class O1ToO2 {
 
         PublishSubject<String> o1 = PublishSubject.create();
-        io.reactivex.Observable<String> o2 = RxJavaV1ToV2Adapter.o1ToO2((Observable<String>) o1);
+        io.reactivex.Observable<String> o2 = RxJavaV1V2Adapter.o1ToO2((Observable<String>) o1);
         TestObserver<String> to2 = new TestObserver<String>();
 
         @Before
@@ -280,7 +280,7 @@ public class RxJavaV1ToV2AdapterTest {
     public static class O1ToF2 {
 
         PublishSubject<String> o1 = PublishSubject.create();
-        io.reactivex.Flowable<String> f2 = RxJavaV1ToV2Adapter.o1ToF2((Observable<String>) o1);
+        io.reactivex.Flowable<String> f2 = RxJavaV1V2Adapter.o1ToF2((Observable<String>) o1);
         io.reactivex.subscribers.TestSubscriber<String> ts2 = new io.reactivex.subscribers.TestSubscriber<String>();
         
         @Before
