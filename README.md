@@ -25,7 +25,7 @@ dependencies {
 ####Usage example:
 
 ```java
-Observable o1 = RxJavaV1ToV2Adapter.o2ToO1(o2);
+Observable o1 = RxJavaV1V2Adapter.o2ToO1(o2);
 ```
 
 ####TODO
