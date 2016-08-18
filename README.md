@@ -11,6 +11,12 @@ Adapter between RxJava [v1][RxJavaV1] and [v2][RxJavaV2].
 
 Please consult [RxJava v2 README][RxJavaV2] to see how to add it to your project.
 
+Usage example:
+
+```java
+Observable o1 = RxJavaV1ToV2Adapter.o2ToO1(o2);
+```
+
 ### TODO
 
 * Add  v1 `Single` <-> v2 `Single`.
