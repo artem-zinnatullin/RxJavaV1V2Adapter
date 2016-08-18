@@ -3,7 +3,7 @@
 
 Adapter between RxJava [v1](https://github.com/ReactiveX/RxJava/tree/1.x) and [v2](https://github.com/ReactiveX/RxJava/tree/2.x).
 
-###With this library you will be able to convert:
+##With this library you will be able to convert:
 
 * v1 `Observable` to v2 `Observable` and vice versa.
 * v1 `Observable` to v2 `Flowable` and vice versa.
@@ -12,6 +12,8 @@ Adapter between RxJava [v1](https://github.com/ReactiveX/RxJava/tree/1.x) and [v
 
 ### TODO
 
+* Add  v1 `Single` <-> v2 `Single`.
+* Add  v1 `Consumable` <-> v2 `Consumable`.
 * Publish to Maven Central.
 * Kotlin part: extension functions `val omg = Observable.just("wow").toO2()`.
 * Connect v1 `Observable` Backpressure with v2 `Flowable` Backpressure, currently it's unbounded.
