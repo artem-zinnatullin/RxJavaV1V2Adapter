@@ -1,3 +1,7 @@
+# Deprecated
+
+Since David Karnok [released his own version of such library](https://github.com/akarnokd/RxJava2Interop) next day I released this library and promotes it everywhere, this project no longer make sense, so please use his [RxJava2Interop](https://github.com/akarnokd/RxJava2Interop).
+
 ## RxJava v1 <-> v2 Adapter
 
 Adapter between RxJava [v1][RxJavaV1] and [v2][RxJavaV2].
